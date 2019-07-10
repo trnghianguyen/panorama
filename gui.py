@@ -48,7 +48,7 @@ class Board:
     
     def stitching(self):
         
-        self.stitching(image_list)
+        image_stitching.stitching(image_list)
         self.output_label.destroy()
         self.output_label = tk.Label(self.root, text="IMAGE ARE STITCHED")
         self.output_label.pack(side="bottom")
