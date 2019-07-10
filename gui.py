@@ -4,6 +4,8 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import image_stitching
+import cv2
+
 class Board:
     """ GUI for image stitching """
     def __init__(self, width=None, height=None):
@@ -37,18 +39,18 @@ class Board:
         name = image_file.name
         self.images_path.append(name)
         # images to stich list
-        for images_path in self.image_list:
-            image = cv2.imread(imagePath)
-            image_list.append(image)
+        image = cv2.imread(name)
+        self.image_list.append(image)
 
         # pack to root
         new_label = tk.Label(self.root, text=name)
         self.images_label.append(new_label)
         self.images_label[-1].pack(side="top")
     
+
     def stitching(self):
         
-        image_stitching.stitching(image_list)
+        image_stitching.stitching(self.image_list)
         self.output_label.destroy()
         self.output_label = tk.Label(self.root, text="IMAGE ARE STITCHED")
         self.output_label.pack(side="bottom")
