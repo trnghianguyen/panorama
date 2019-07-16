@@ -1,0 +1,17 @@
+# panorama
+Lib imutils: dùng các hàm để xử lí ảnh: xoay, resize. ngoài ra giúp hiển thị hình ảnh
+lib open cv2:
+sử dụng các hàm:
+imread: đọc ảnh
+append: nối các ảnh lạ với nhau
+creareStitcher: tạo ra các oject trước khi nối 
+copyMakeBorder: tạo khung ảnh sau khi tạo ảnh panorama, loại bỏ phần thừa của ảnh
+Qui trình stitching:
+ b1: chuyển thành ảnh grayscale bằng hàm cvtcolor, chuyển tất cả các pixel lớn về 255 ( mức xám) bằng hàm threshold
+ b2: tìm tất cả các điểm contours bằng hàm findContours, sau đó tìm điểm lớn nhất 
+ b3: tạo cửa sổ stitching
+ tạo 2 mặt nạ bao gồm: 
+ 1 mặt nạ lưu đối tượng
+ 1 mặt nạ để nối ảnh bằng cách tìm minimum trong mỗi vùng ảnh so khớp
+ đếm các giá trị khác không từ bên trái qua, tìm contour và ghi vào mask
+ b4: nối mask vào cửa sổ stiched ban đầu
