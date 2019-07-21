@@ -1,7 +1,7 @@
+#import package
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
-#import image_stitching
 import cv2
 import imutils
 import argparse
@@ -13,7 +13,6 @@ class Board:
         """ Create root window
         """
         self.root = tk.Tk()
-        
         self.width = width
         self.height = height
 
@@ -25,6 +24,8 @@ class Board:
 
         self.root.wm_geometry("{}x{}+{}+{}".format(self.width, self.height, 0, 0))
         self.root.wm_resizable(False, False)
+
+        #
         # path to images
         self.images_path = []
         # LIST IMAGE
@@ -33,6 +34,16 @@ class Board:
         self.images_label = []
         # output image
         self.output_label = tk.Label(self.root)
+        self.quit_button = tk.Button(self.root)
+        #
+        self.create_widgets()
+    
+    
+    #create widget
+    def create_widgets(self):
+        self.label = tk.Label(text = "Panorama App",font="Consalas 35", fg="blue")
+        self.label.pack(pady=10)
+
 
     def choose_image(self):
         """ Browsing Image files """
@@ -42,6 +53,8 @@ class Board:
         # images to stich list
         image = cv2.imread(name)
         self.image_list.append(image)
+        #im = image.subsample(3,3)
+        #cv2.imshow("Input",im)
         
         # pack to root
         new_label = tk.Label(self.root, text=name)
@@ -50,19 +63,16 @@ class Board:
     
 
     def stitching(self):
-        print("[INFO] stitching images...")
-        
+        #create oject for sticher
         stitcher = cv2.createStitcher() if imutils.is_cv3() else cv2.Stitcher_create()
         (status, stitched) = stitcher.stitch(self.image_list)
-        #
         if status == 0:
-    # check crop out the largest rectangular
-    # region from the stitched image
-            print("[INFO] cropping...")
+
+        #crop out the image with 5 pixcel
             stitched = cv2.copyMakeBorder(stitched, 5, 5, 5, 5,
             cv2.BORDER_CONSTANT, (0, 0, 0))
 
-        # convert the stitched image to grayscale and threshold it
+        # convert to grayscale and threshold it
             gray = cv2.cvtColor(stitched, cv2.COLOR_BGR2GRAY)
             thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)[1]
 
@@ -96,35 +106,46 @@ class Board:
         # stitched image
             stitched = stitched[y:y + h, x:x + w]
 
-    # write the output stitched image to disk
-            cv2.imwrite("output11.jpg", stitched)
+    # write output to disk
+            cv2.imwrite("output.jpg", stitched)
 
-    # display the output stitched image to our screen
-            cv2.imshow("Stitched", stitched)
+    # display to screen
+            newimg = cv2.resize(stitched,(1366,768))
+            cv2.imshow("Stitched", newimg)
             cv2.waitKey(0)
-
-    # being detected
+            self.output_label.destroy()
+            self.output_label = tk.Label(self.root, text="IMAGE ARE STITCHED", fg="red")
+            self.output_label.pack(side="bottom")
+    # Not stitching
         else:
-            print("[INFO] image stitching failed ({})".format(status))
+            print("Image stitching failed ")
         
-        self.output_label.destroy()
-        self.output_label = tk.Label(self.root, text="IMAGE ARE STITCHED")
-        self.output_label.pack(side="bottom")
+        
         
     def loop(self):
         
         # choose image button
         choose_button = tk.Button(self.root, text="CHOSE IMAGES",
-                font=("Times", 14, "bold"), bd=2,
+                font=("Consalas", 14, "bold"), bd=4,
                 command=self.choose_image)
         choose_button.pack(side="top")
 
+        #Quit button
+        quit_button = tk.Button(self.root, text="QUIT",
+               font=("Consalas", 14,"bold"),fg ="red", bd=4,
+              command=self.root.destroy)
+        quit_button.pack(side="bottom")
+
+        
         # output image button
         output_button = tk.Button(self.root, text="STITCH",
-                font=("Times", 14, "bold"), bd=2,
+                font=("Consalas", 14, "bold"), bd=4,
                 command=self.stitching)
         output_button.pack(side="bottom")
-        self.root.mainloop()
 
-a = Board(400,300)
+        
+        self.root.mainloop()
+#Create board
+a = Board(500,400)
 a.loop()
+
